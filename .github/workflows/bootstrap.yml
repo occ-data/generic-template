@@ -1,0 +1,26 @@
+# .github/workflows/bootstrap.yml
+name: Bootstrap
+on:
+  push:
+    branches: [main]
+jobs:
+  setup:
+    if: ${{ !github.event.repository.is_template }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install detect-secrets pre-commit
+      - run: |
+          detect-secrets scan -p detect-secrets-plugins/occ_regex.py \
+            --disable-plugin Base64HighEntropyString \
+            --disable-plugin HexHighEntropyString > .secrets.baseline
+          detect-secrets scan -p detect-secrets-plugins/occ_regex.py > .full_audit
+      - run: rm .github/workflows/bootstrap.yml
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add -A
+          git commit -m "Bootstrap secrets baseline" && git push
