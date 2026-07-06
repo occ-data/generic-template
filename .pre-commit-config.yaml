@@ -1,5 +1,5 @@
 repos:
-  - repo: git@github.com:Yelp/detect-secrets
+  - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
       - id: detect-secrets
@@ -13,7 +13,7 @@ repos:
           - .secrets.ignore
         additional_dependencies:
           - pyahocorasick
-        exclude: .secrets.ignore  # exclude this file from being scanned
+        exclude: ^(\.secrets\.baseline|\.secrets\.ignore|\.full_audit)$
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -27,4 +27,5 @@ repos:
         args:
           - --branch=develop
           - --branch=master
+          - --branch=main
           - --pattern=release/.*
